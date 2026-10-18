@@ -13,12 +13,28 @@ The three core actions I want a user to perform are:
 2. Add or edit pet care tasks with a scheduled time, duration, and priority.
 3. Generate and view today's care plan based on the owner's availability and task priorities.
 
+My initial UML design includes four classes: Owner, Pet, Task, and Scheduler.
+
+- Owner stores the owner's name, available care time, and pets. Its get_all_tasks() method gathers Pet–Task pairs across all its pets.
+- Pet stores an animal's details and its list of care tasks.
+- Task represents one care activity, including its description, date, time, duration, priority, frequency, and completion status.
+- Scheduler uses the Owner's tasks to organize the schedule. Its planned responsibilities include sorting, filtering, conflict warnings, daily planning, and handling recurring tasks.
+
+One Owner can have many Pets, and each Pet can have many Tasks. Scheduler holds a reference to Owner so it can coordinate care across multiple pets.
+
 **b. Design changes**
 
 - Did your design change during implementation?
 - If yes, describe at least one change and why you made it.
 
----
+During the skeleton review, I changed detect_conflicts() from
+returning None to returning a list of warning strings. This will
+let the terminal demo and Streamlit UI display conflicts without
+putting display logic inside Scheduler.
+
+I kept task editing simple: the UI will update the fields of an
+existing Task object directly rather than adding another method.
+These are design decisions; the behavior is not implemented yet.
 
 ## 2. Scheduling Logic and Tradeoffs
 

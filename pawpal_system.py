@@ -78,7 +78,7 @@ class Scheduler:
         """Return tasks matching the optional filters."""
         pass
 
-    def detect_conflicts(self) -> None:
+    def detect_conflicts(self) -> list[str]:
         """Identify tasks with matching dates and start times."""
         pass
 
