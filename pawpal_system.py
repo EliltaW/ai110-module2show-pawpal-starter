@@ -21,11 +21,15 @@ class Owner:
 
     def add_pet(self, pet: Pet) -> None:
         """Add a pet to this owner."""
-        pass
+        self.pets.append(pet)
 
     def get_all_tasks(self) -> list[tuple[Pet, Task]]:
         """Return task pairs for all pets."""
-        pass
+        result = []
+        for pet in self.pets:
+            for task in pet.tasks:
+                result.append((pet, task))
+        return result
 
 
 @dataclass
@@ -40,7 +44,7 @@ class Pet:
 
     def add_task(self, task: Task) -> None:
         """Add a task to this pet."""
-        pass
+        self.tasks.append(task)
 
 
 @dataclass
@@ -57,7 +61,7 @@ class Task:
 
     def mark_complete(self) -> None:
         """Mark this task as complete."""
-        pass
+        self.is_completed = True
 
 
 class Scheduler:

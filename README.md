@@ -42,16 +42,27 @@ pip install -r requirements.txt
 6. Connect your logic to the Streamlit UI in `app.py`.
 7. Refine UML so it matches what you actually built.
 
+## Implementation Summary
+
+PawPal+ uses four backend classes in pawpal_system.py.
+Owner manages multiple pets and gathers their tasks as
+Pet–Task pairs. Pet stores pet details and supports adding tasks.
+Task stores care activity details and can be marked complete.
+
+Scheduler has method stubs for the scheduling features that
+will be implemented next. The main.py demo currently prints
+tasks across two pets. Two pytest tests verify task completion
+and task addition.
+
 ## 🖥️ Sample Output
 
 Paste a sample of your app's CLI or Streamlit output here so a reader can see what a generated plan looks like:
 
 ```
-# e.g.:
-# Daily plan for Biscuit (Golden Retriever):
-#   08:00 — Morning walk (30 min) [priority: high]
-#   09:00 — Feeding (10 min) [priority: high]
-#   ...
+Today's Schedule
+08:00 | Buddy | Morning walk | 20 minutes | Priority: high | Not completed
+09:00 | Buddy | Feeding | 10 minutes | Priority: high | Not completed
+10:00 | Luna | Brushing | 15 minutes | Priority: low | Not completed
 ```
 
 ## 🧪 Testing PawPal+
@@ -74,12 +85,12 @@ Sample test output:
 
 > Fill in once you've implemented scheduling logic.
 
-| Feature | Method(s) | Notes |
-|---------|-----------|-------|
-| Task sorting | | e.g., by priority, duration |
-| Filtering | | e.g., skip tasks if time runs out |
-| Conflict handling | | e.g., overlapping time slots |
-| Recurring tasks | | e.g., daily vs. weekly |
+| Feature           | Method(s) | Notes                             |
+| ----------------- | --------- | --------------------------------- |
+| Task sorting      |           | e.g., by priority, duration       |
+| Filtering         |           | e.g., skip tasks if time runs out |
+| Conflict handling |           | e.g., overlapping time slots      |
+| Recurring tasks   |           | e.g., daily vs. weekly            |
 
 ## 📸 Demo Walkthrough
 
@@ -91,4 +102,4 @@ Describe your app in numbered steps so a reader can follow along without watchin
 4. <!-- Describe this step -->
 5. <!-- Add more steps as needed -->
 
-**Screenshot or video** *(optional)*: <!-- Insert a screenshot or link to a demo video here -->
+**Screenshot or video** _(optional)_: <!-- Insert a screenshot or link to a demo video here -->

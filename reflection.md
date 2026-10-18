@@ -57,12 +57,17 @@ These are design decisions; the behavior is not implemented yet.
 - How did you use AI tools during this project (for example: design brainstorming, debugging, refactoring)?
 - What kinds of prompts or questions were most helpful?
 
+I used AI to brainstorm the UML, create class skeletons, implement small methods, and draft tests.
+Focused prompts limited changes to a few methods at a time, making mistakes easier to catch and the code easier to understand.
+We reviewed the code, checked the CLI output, and ran pytest; both initial tests passed.
+
 **b. Judgment and verification**
 
 - Describe one moment where you did not accept an AI suggestion as-is.
 - How did you evaluate or verify what the AI suggested?
 
----
+-The generated skeleton declared detect_conflicts() -> None. After review, we changed it to list[str] so the UI could receive warning messages.
+-The CLI demo and two passing tests verified the methods we’ve implemented so far
 
 ## 4. Testing and Verification
 
