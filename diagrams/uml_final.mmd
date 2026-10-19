@@ -43,8 +43,8 @@ classDiagram
 
     Owner "1" o-- "0..*" Pet : pets
     Pet "1" o-- "0..*" Task : tasks
-    Scheduler --> "1" Owner : references; calls get_all_tasks()
-
+    Scheduler --> "1" Owner : uses
+    
     %% OptionalPetList is list[Pet] | None; Owner defaults it to None.
     %% OptionalString is str | None; OptionalBool is bool | None; both default to None.
     %% Pet's generated __init__ uses tasks: list[Task] = <factory>, producing a new empty list.
