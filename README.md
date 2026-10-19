@@ -67,20 +67,22 @@ Today's Schedule
 
 ## 🧪 Testing PawPal+
 
+Run the test suite:
+
 ```bash
-# Run the full test suite:
-pytest
-
-# Run with coverage:
-pytest --cov
+python -m pytest
 ```
 
-Sample test output:
+The 16 tests cover task addition and completion, sorting,
+filtering, daily and weekly recurrence, duplicate prevention,
+conflict detection, daily-plan budgets, and empty collections.
 
-```
-# Paste your pytest output here
-```
+### Test Results
 
+````text
+=================================== 16 passed in 0.08s ===================================```
+
+Confidence level: TO BE ADDED
 ## 📐 Smarter Scheduling
 
 ## 📐 Smarter Scheduling
@@ -106,3 +108,4 @@ Describe your app in numbered steps so a reader can follow along without watchin
 5. <!-- Add more steps as needed -->
 
 **Screenshot or video** _(optional)_: <!-- Insert a screenshot or link to a demo video here -->
+````
