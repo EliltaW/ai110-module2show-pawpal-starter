@@ -1,0 +1,53 @@
+classDiagram
+    class Owner {
+        +first_name: str
+        +last_name: str
+        +available_minutes: int
+        +pets: list~Pet~
+        +Owner(first_name: str, last_name: str, available_minutes: int, pets: OptionalPetList = None): None
+        +add_pet(pet: Pet): None
+        +get_all_tasks(): list~TaskPair~
+    }
+
+    class Pet {
+        +name: str
+        +species: str
+        +breed: str
+        +age: int
+        +tasks: list~Task~
+        +Pet(name: str, species: str, breed: str, age: int, tasks: list~Task~ = factory): None
+        +add_task(task: Task): None
+    }
+
+    class Task {
+        +description: str
+        +due_date: date
+        +time: str
+        +duration_minutes: int
+        +priority: str
+        +frequency: str
+        +is_completed: bool
+        +Task(description: str, due_date: date, time: str, duration_minutes: int, priority: str, frequency: str, is_completed: bool = False): None
+        +mark_complete(): None
+    }
+
+    class Scheduler {
+        +owner: Owner
+        +Scheduler(owner: Owner): None
+        +sort_by_time(): list~TaskPair~
+        +filter_tasks(pet_name: OptionalString = None, is_completed: OptionalBool = None): list~TaskPair~
+        +detect_conflicts(): list~str~
+        +generate_daily_plan(): list~TaskPair~
+        +mark_task_complete(pet: Pet, task: Task): None
+    }
+
+    Owner "1" o-- "0..*" Pet : pets
+    Pet "1" o-- "0..*" Task : tasks
+    Scheduler --> "1" Owner : references; calls get_all_tasks()
+
+    %% OptionalPetList is list[Pet] | None; Owner defaults it to None.
+    %% OptionalString is str | None; OptionalBool is bool | None; both default to None.
+    %% Pet's generated __init__ uses tasks: list[Task] = <factory>, producing a new empty list.
+    %% Task.is_completed defaults to False.
+    %% TaskPair is tuple[Pet, Task]. Owner.get_all_tasks() and all Scheduler task-pair methods return list[TaskPair].
+    %% Task.time, priority, and frequency are plain str fields; the implementation does not constrain their values or format.
