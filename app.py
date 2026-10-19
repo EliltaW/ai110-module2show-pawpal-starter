@@ -1,6 +1,17 @@
+from datetime import date, time
+
 import streamlit as st
+from pawpal_system import Owner, Pet, Task, Scheduler
 
 st.set_page_config(page_title="PawPal+", page_icon="🐾", layout="centered")
+if "owner" not in st.session_state:
+    st.session_state["owner"] = Owner(
+        first_name="Alex",
+        last_name="Morgan",
+        available_minutes=60,
+    )
+
+owner = st.session_state["owner"]
 
 st.title("🐾 PawPal+")
 
@@ -39,34 +50,109 @@ At minimum, your system should:
 st.divider()
 
 st.subheader("Quick Demo Inputs (UI only)")
-owner_name = st.text_input("Owner name", value="Jordan")
-pet_name = st.text_input("Pet name", value="Mochi")
-species = st.selectbox("Species", ["dog", "cat", "other"])
+owner.first_name = st.text_input("First name", value=owner.first_name)
+owner.last_name = st.text_input("Last name", value=owner.last_name)
+owner.available_minutes = int(
+    st.number_input(
+        "Available care time (minutes per day)",
+        min_value=0,
+        value=owner.available_minutes,
+        step=1,
+    )
+)
+with st.form("add_pet_form"):
+    pet_name = st.text_input("Pet name")
+    species = st.selectbox("Species", ["dog", "cat", "other"])
+    breed = st.text_input("Breed")
+    age = st.number_input("Age in years", min_value=0, step=1)
+    submitted = st.form_submit_button("Add pet")
+
+if submitted:
+    if not pet_name.strip():
+        st.warning("Enter a pet name before adding the pet.")
+    else:
+        pet = Pet(
+            name=pet_name.strip(),
+            species=species,
+            breed=breed,
+            age=int(age),
+        )
+        owner.add_pet(pet)
+        st.success(f"Added {pet.name}.")
+
+if owner.pets:
+    st.write("Your pets:")
+    st.table(
+        [
+            {
+                "Name": pet.name,
+                "Species": pet.species,
+                "Breed": pet.breed,
+                "Age": pet.age,
+            }
+            for pet in owner.pets
+        ]
+    )
+else:
+    st.info("No pets added yet.")
 
 st.markdown("### Tasks")
-st.caption("Add a few tasks. In your final version, these should feed into your scheduler.")
-
-if "tasks" not in st.session_state:
-    st.session_state.tasks = []
-
-col1, col2, col3 = st.columns(3)
-with col1:
-    task_title = st.text_input("Task title", value="Morning walk")
-with col2:
-    duration = st.number_input("Duration (minutes)", min_value=1, max_value=240, value=20)
-with col3:
-    priority = st.selectbox("Priority", ["low", "medium", "high"], index=2)
-
-if st.button("Add task"):
-    st.session_state.tasks.append(
-        {"title": task_title, "duration_minutes": int(duration), "priority": priority}
-    )
-
-if st.session_state.tasks:
-    st.write("Current tasks:")
-    st.table(st.session_state.tasks)
+if not owner.pets:
+    st.info("Add a pet before creating tasks.")
 else:
-    st.info("No tasks yet. Add one above.")
+    with st.form("add_task_form"):
+        selected_pet_index = st.selectbox(
+            "Pet",
+            options=list(range(len(owner.pets))),
+            format_func=lambda index: owner.pets[index].name,
+        )
+        description = st.text_input("Description")
+        due_date = st.date_input("Due date", value=date.today())
+        start_time = st.time_input("Start time", value=time(8, 0))
+        duration_minutes = st.number_input(
+            "Duration in minutes",
+            min_value=1,
+            value=20,
+            step=1,
+        )
+        priority = st.selectbox("Priority", ["low", "medium", "high"])
+        frequency = st.selectbox("Frequency", ["once", "daily", "weekly"])
+        submitted = st.form_submit_button("Add task")
+
+    if submitted:
+        if not description.strip():
+            st.warning("Enter a task description before adding the task.")
+        else:
+            selected_pet = owner.pets[selected_pet_index]
+            task = Task(
+                description=description.strip(),
+                due_date=due_date,
+                time=start_time.strftime("%H:%M"),
+                duration_minutes=int(duration_minutes),
+                priority=priority,
+                frequency=frequency,
+            )
+            selected_pet.add_task(task)
+            st.success(f"Added {task.description} for {selected_pet.name}.")
+
+    task_rows = [
+        {
+            "Pet": pet.name,
+            "Description": task.description,
+            "Due date": task.due_date,
+            "Time": task.time,
+            "Duration (minutes)": task.duration_minutes,
+            "Priority": task.priority,
+            "Frequency": task.frequency,
+            "Completed": task.is_completed,
+        }
+        for pet, task in owner.get_all_tasks()
+    ]
+    if task_rows:
+        st.write("Current tasks:")
+        st.table(task_rows)
+    else:
+        st.info("No tasks yet. Add one above.")
 
 st.divider()
 

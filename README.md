@@ -83,14 +83,17 @@ Sample test output:
 
 ## 📐 Smarter Scheduling
 
-> Fill in once you've implemented scheduling logic.
+## 📐 Smarter Scheduling
 
-| Feature           | Method(s) | Notes                             |
-| ----------------- | --------- | --------------------------------- |
-| Task sorting      |           | e.g., by priority, duration       |
-| Filtering         |           | e.g., skip tasks if time runs out |
-| Conflict handling |           | e.g., overlapping time slots      |
-| Recurring tasks   |           | e.g., daily vs. weekly            |
+| Feature    | Method                            | Behavior                                                                                                                                                           |
+| ---------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Sorting    | `Scheduler.sort_by_time()`        | Sorts by due date, then HH:MM start time.                                                                                                                          |
+| Filtering  | `Scheduler.filter_tasks()`        | Filters by pet name (case-insensitive), completion status, or both.                                                                                                |
+| Conflicts  | `Scheduler.detect_conflicts()`    | Warns about unfinished tasks with matching dates and start times, including across pets.                                                                           |
+| Recurrence | `Scheduler.mark_task_complete()`  | Keeps the completed original and creates an unfinished task 1 day from today for daily tasks or 7 days for weekly tasks. Repeated completion creates no duplicate. |
+| Daily plan | `Scheduler.generate_daily_plan()` | Selects today's unfinished tasks by priority within the time budget, skips tasks that do not fit, and displays selected tasks chronologically.                     |
+
+Conflict warnings do not automatically resolve conflicts. Overlapping durations are not detected.
 
 ## 📸 Demo Walkthrough
 

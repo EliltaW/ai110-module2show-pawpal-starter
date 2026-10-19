@@ -48,7 +48,9 @@ These are design decisions; the behavior is not implemented yet.
 - Describe one tradeoff your scheduler makes.
 - Why is that tradeoff reasonable for this scenario?
 
----
+- Conflict detection checks matching dates and start times, rather than overlapping durations. This keeps it simple but can miss partial overlaps.
+- We kept the nested-loop approach after comparing it with dictionary grouping because readability matters for this small project.
+- Daily planning chooses tasks by priority within a time budget. It warns about conflicts separately rather than automatically resolving them.
 
 ## 3. AI Collaboration
 

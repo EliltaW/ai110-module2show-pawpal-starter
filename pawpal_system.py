@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import date
+from datetime import date, timedelta
 
 
 class Owner:
@@ -71,25 +71,97 @@ class Scheduler:
         self.owner = owner
 
     def sort_by_time(self) -> list[tuple[Pet, Task]]:
-        """Return tasks in chronological order."""
-        pass
+        """Return task pairs sorted by due date and start time."""
+        return sorted(
+            self.owner.get_all_tasks(),
+            key=lambda pair: (pair[1].due_date, pair[1].time),
+        )
 
     def filter_tasks(
         self,
         pet_name: str | None = None,
         is_completed: bool | None = None,
     ) -> list[tuple[Pet, Task]]:
-        """Return tasks matching the optional filters."""
-        pass
+        """Return task pairs matching the supplied pet and status filters."""
+        result = []
+        for pet, task in self.owner.get_all_tasks():
+            if pet_name is not None and pet.name.casefold() != pet_name.casefold():
+                continue
+            if is_completed is not None and task.is_completed != is_completed:
+                continue
+            result.append((pet, task))
+        return result
 
     def detect_conflicts(self) -> list[str]:
-        """Identify tasks with matching dates and start times."""
-        pass
+        """Return warnings for unfinished tasks sharing a date and start time."""
+        tasks = [
+            pair for pair in self.owner.get_all_tasks() if not pair[1].is_completed
+        ]
+        warnings = []
+        for index, (pet, task) in enumerate(tasks):
+            for other_pet, other_task in tasks[index + 1 :]:
+                if (
+                    task.due_date == other_task.due_date
+                    and task.time == other_task.time
+                ):
+                    warnings.append(
+                        f"Conflict on {task.due_date} at {task.time}: "
+                        f"{pet.name} - {task.description} and "
+                        f"{other_pet.name} - {other_task.description}."
+                    )
+        return warnings
 
     def generate_daily_plan(self) -> list[tuple[Pet, Task]]:
-        """Return a daily plan within the owner's time limit."""
-        pass
+        """Select today's unfinished tasks within the owner's time budget."""
+        priority_rank = {"high": 0, "medium": 1, "low": 2}
+        candidates = [
+            pair
+            for pair in self.owner.get_all_tasks()
+            if pair[1].due_date == date.today() and not pair[1].is_completed
+        ]
+        candidates.sort(
+            key=lambda pair: (priority_rank[pair[1].priority], pair[1].time)
+        )
+
+        remaining_minutes = self.owner.available_minutes
+        selected = []
+        for pair in candidates:
+            task = pair[1]
+            if task.duration_minutes <= remaining_minutes:
+                selected.append(pair)
+                remaining_minutes -= task.duration_minutes
+
+        return sorted(
+            selected,
+            key=lambda pair: (pair[1].due_date, pair[1].time),
+        )
 
     def mark_task_complete(self, pet: Pet, task: Task) -> None:
-        """Mark a task complete and handle recurrence."""
-        pass
+        """Complete an owned task and add its next daily or weekly occurrence."""
+        if not any(owner_pet is pet for owner_pet in self.owner.pets):
+            raise ValueError("Pet does not belong to this owner.")
+        if not any(pet_task is task for pet_task in pet.tasks):
+            raise ValueError("Task does not belong to this pet.")
+        if task.is_completed:
+            return
+
+        task.mark_complete()
+
+        if task.frequency == "daily":
+            due_date = date.today() + timedelta(days=1)
+        elif task.frequency == "weekly":
+            due_date = date.today() + timedelta(days=7)
+        else:
+            return
+
+        pet.add_task(
+            Task(
+                description=task.description,
+                due_date=due_date,
+                time=task.time,
+                duration_minutes=task.duration_minutes,
+                priority=task.priority,
+                frequency=task.frequency,
+                is_completed=False,
+            )
+        )
